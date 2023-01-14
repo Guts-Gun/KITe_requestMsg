@@ -37,3 +37,6 @@ spring:
           type:
             descriptor:
               sql: trace  # query의 ?에 어떤 값이 들어가는지 TRACE Log에 값을 보여줌
+feign:
+  url :
+    sending-manager : localhost:8004
