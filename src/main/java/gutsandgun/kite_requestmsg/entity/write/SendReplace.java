@@ -7,31 +7,25 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Where(clause = "is_deleted = false")
-@SQLDelete(sql= "UPDATE sending_msg SET is_deleted=true WHERE id = ?")
-@Table(name="sending_msg")
-@Builder
-public class SendingMsg extends BaseTimeEntity {
+//@Where(clause = "is_deleted = false")
+//@SQLDelete(sql= "UPDATE sending_msg SET is_deleted=true WHERE id = ?")
+@Table(name="send_replace")
+public class SendReplace extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "fk_tx_id")
     private Long id;
-
-    @Column(name = "fk_sending_id")
-    private Long sendingId;
-
-    private String sender;
 
     private String receiver;
 
-    private String name;
+    private String sender;
 
     @Comment("생성자")
     @Column(name = "reg_id", nullable = false, length = 20)
@@ -40,11 +34,5 @@ public class SendingMsg extends BaseTimeEntity {
     @Comment("수정자")
     @Column(name = "mod_id", length = 20)
     private String ModId;
-
-    private String var1;
-    private String var2;
-    private String var3;
-
-    private Boolean isDeleted = false;
 
 }
