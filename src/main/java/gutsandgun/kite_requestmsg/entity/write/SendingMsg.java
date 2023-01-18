@@ -33,7 +33,6 @@ public class SendingMsg extends BaseTimeEntity {
 
     private String name;
 
-
     @Comment("생성자")
     @Column(name = "reg_id", nullable = false, length = 20)
     private String regId;
@@ -41,6 +40,10 @@ public class SendingMsg extends BaseTimeEntity {
     @Comment("수정자")
     @Column(name = "mod_id", length = 20)
     private String ModId;
+
+    private String var1;
+    private String var2;
+    private String var3;
 
     private Boolean isDeleted = false;
 
