@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value="request")
+@RequestMapping(value="/request")
 @Log4j2
 @RequiredArgsConstructor
 public class RequestController {
@@ -64,9 +64,9 @@ public class RequestController {
     public void excelDownload(HttpServletResponse res) throws UnsupportedEncodingException, ParseException {
 
         List<String> headerList = new ArrayList<>();
-        headerList.add("NAME");
-        headerList.add("PHONE");
-        headerList.add("EMAIL");
+        headerList.add("name");
+        headerList.add("phone");
+        headerList.add("email");
 
         msgService.downloadSampleFile(res, headerList);
     }
