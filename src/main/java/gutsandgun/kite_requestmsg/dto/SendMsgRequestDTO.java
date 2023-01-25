@@ -1,6 +1,5 @@
 package gutsandgun.kite_requestmsg.dto;
 
-import gutsandgun.kite_requestmsg.entity.SendingRuleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class SendMsgRequestDTO {
         // sendingType                         발송 타입
         // replaceYn                           대체발송 여부
         // totalSending                        총 발송 메세지 갯수
-        // requestTime                         등록 시간
+        // inputTime                           등록 시간
         // scheduleTime                        예약 시간
         // title                               제목
         // content                             메세지 내용

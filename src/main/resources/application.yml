@@ -3,14 +3,14 @@ server:
 spring:
   writedb:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://yjhome.kro.kr:3306/txmsg?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:3306/txmsg?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: qwer1234!
     hikari:
       maximum-pool-size: 10
   readdb:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://yjhome.kro.kr:3306/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:3306/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: qwer1234!
     hikari:
@@ -34,7 +34,7 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: https://yjhome.kro.kr:10006/realms/KITe
+            issuer-uri: https://gutsandgun.kro.kr:10006/realms/KITe
         registration:
           keycloak:
             provider: keycloak
@@ -44,7 +44,7 @@ spring:
             redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
       resourceserver:
         jwt:
-          jwk-set-uri: https://yjhome.kro.kr:10006/realms/KITe/protocol/openid-connect/certs
+          jwk-set-uri: https://gutsandgun.kro.kr:10006/realms/KITe/protocol/openid-connect/certs
 logging:
   level:
     org:
@@ -58,7 +58,7 @@ keycloak:
   bearer-only: true
   ssl-required: external
   resource: spring_auth
-  auth-server-url: https://yjhome.kro.kr:10006
+  auth-server-url: https://gutsandgun.kro.kr:10006
   credentials:
     secret: yt7mnKRgBWwwr8jYzoiaV0PHRm7hJWm0
 
