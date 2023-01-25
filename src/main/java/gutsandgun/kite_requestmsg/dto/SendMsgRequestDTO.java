@@ -20,7 +20,7 @@ public class SendMsgRequestDTO {
         // replace_receiver                    대체발송 수신자 정보 (전화번호/이메일)
 
     SendingDTO sendingDTO;                  // 발송 정보
-        // ruleType                            중계사 규칙 타입
+        // sendingRuleType                     중계사 규칙 타입
         // sendingType                         발송 타입
         // replaceYn                           대체발송 여부
         // totalSending                        총 발송 메세지 갯수

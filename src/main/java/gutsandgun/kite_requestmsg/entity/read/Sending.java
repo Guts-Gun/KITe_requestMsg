@@ -33,7 +33,7 @@ public class Sending {
      * 분배 규칙 타입
      */
     @Comment("분배 규칙 타입")
-    private SendingRuleType SendingRuleType;
+    private SendingRuleType sendingRuleType;
 
     /**
      * 발송 메시지 타입
