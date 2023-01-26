@@ -35,7 +35,6 @@ public class RequestController {
      * @return long sendingId
      */
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/sendReq")
     public ResponseEntity<String> requestMsg(Principal principal, @RequestBody SendMsgRequestDTO sendMsgRequestDTO) {
 
