@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +71,9 @@ public class MsgServiceImpl implements MsgService {
         });
 
         // TX 입력 완료 시 send manager start sending
-        sendingManagerServiceClient.startSending(sendingId);
+        Map<String, Long> map = new HashMap<>();
+        map.put("sendingId", sendingId);
+        sendingManagerServiceClient.startSending(map);
 
     }
 

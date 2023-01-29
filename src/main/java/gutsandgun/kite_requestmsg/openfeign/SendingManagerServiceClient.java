@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 
 @FeignClient(name = "sending-manager-client", url="${feign.url.sending-manager}", configuration = FeignConfig.class)
 public interface SendingManagerServiceClient {
@@ -16,6 +18,6 @@ public interface SendingManagerServiceClient {
     ResponseEntity<Long> insertSending(@RequestParam("userId") String userId, @RequestBody SendMsgRequestDTO sendMsgRequestDTO);
 
     @PostMapping(value = "/sending/start")
-    ResponseEntity<Long> startSending(@RequestBody Long sendingId);
+    ResponseEntity<Long> startSending(@RequestBody Map<String,Long> map);
 
 }
