@@ -41,6 +41,8 @@ public class SendingDTO {
 
     private String content;                 // 메세지 내용
 
+    private String sender;                  // 발신자
+
     private String regId;
 
     private String modId;
