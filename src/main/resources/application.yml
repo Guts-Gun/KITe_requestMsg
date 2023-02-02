@@ -3,16 +3,16 @@ server:
 spring:
   writedb:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:3306/txmsg?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:12005/request?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: qwer1234!
+    password: gutsandgun
     hikari:
       maximum-pool-size: 10
   readdb:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:3306/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    jdbc-url: jdbc:mysql://gutsandgun.kro.kr:12010/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: qwer1234!
+    password: gutsandgun
     hikari:
       maximum-pool-size: 10
   jpa:
@@ -49,7 +49,7 @@ keycloak:
   resource: spring_auth
   auth-server-url: https://gutsandgun.kro.kr:10006
   credentials:
-    secret: 0U1wVFCEHbzhhyPzWvDkQUnVfZFht7VE
+    secret: rxxJSm63zgPqob8ShKv4t3GyAu0wrUXo
 
 
 feign:
