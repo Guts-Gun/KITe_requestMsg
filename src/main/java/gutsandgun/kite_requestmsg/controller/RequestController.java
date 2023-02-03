@@ -25,12 +25,12 @@ public class RequestController {
     private final MsgService msgService;
 
     /**
-     * 발송 시작
+     * 발송 요청
      *
      * @author solbiko
      * @param principal 로그인 객체
      * @param sendMsgRequestDTO 발송 요청 정보
-     * @return long sendingId
+     * @return String success
      */
 
     @PostMapping("/sendReq")

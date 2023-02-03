@@ -17,10 +17,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.Date;
@@ -49,21 +47,22 @@ public class MsgServiceImpl implements MsgService {
     @Override
     public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO){
 
+        SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
+        sendingDTO.setInputTime(new Date().getTime());
+        sendMsgRequestDTO.setSendingDTO(sendingDTO);
+
         // send manager insert sending
         ResponseEntity<Long> response = sendingManagerServiceClient.insertSending(userId, sendMsgRequestDTO);
         int statusCode = response.getStatusCode().value();
-        response.getStatusCode().value();
 
         Long sendingId = response.getBody();
-
-        SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
 
         log.info("Service: request, type: genSendingId, sendingId: " + sendingId +
                 ", sendingType: " + sendingDTO.getSendingRuleType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
                 ", total: " + sendingDTO.getTotalSending() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
                 ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
                 ", sender: " + sendingDTO.getSender() + ", userId: " + userId +
-                ", requestTime: " + new Date().getTime() + ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()
+                ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()
         );
 
         // TX 입력
