@@ -6,10 +6,8 @@ import gutsandgun.kite_requestmsg.service.MsgService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +25,12 @@ public class RequestController {
     private final MsgService msgService;
 
     /**
-     * 발송 시작
+     * 발송 요청
      *
      * @author solbiko
      * @param principal 로그인 객체
      * @param sendMsgRequestDTO 발송 요청 정보
-     * @return long sendingId
+     * @return String success
      */
 
     @PostMapping("/sendReq")

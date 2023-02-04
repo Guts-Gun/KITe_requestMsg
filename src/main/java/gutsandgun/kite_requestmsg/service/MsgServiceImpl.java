@@ -2,6 +2,7 @@ package gutsandgun.kite_requestmsg.service;
 
 import gutsandgun.kite_requestmsg.dto.SendMsgRequestDTO;
 import gutsandgun.kite_requestmsg.dto.SendReplaceDTO;
+import gutsandgun.kite_requestmsg.dto.SendingDTO;
 import gutsandgun.kite_requestmsg.dto.SendingMsgDTO;
 import gutsandgun.kite_requestmsg.entity.write.SendReplace;
 import gutsandgun.kite_requestmsg.entity.write.SendingMsg;
@@ -10,23 +11,24 @@ import gutsandgun.kite_requestmsg.repository.write.WriteSendReplaceRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingMsgRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class MsgServiceImpl implements MsgService {
 
     @Autowired
@@ -45,12 +47,23 @@ public class MsgServiceImpl implements MsgService {
     @Override
     public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO){
 
+        SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
+        sendingDTO.setInputTime(new Date().getTime());
+        sendMsgRequestDTO.setSendingDTO(sendingDTO);
+
         // send manager insert sending
         ResponseEntity<Long> response = sendingManagerServiceClient.insertSending(userId, sendMsgRequestDTO);
         int statusCode = response.getStatusCode().value();
-        response.getStatusCode().value();
 
         Long sendingId = response.getBody();
+
+        log.info("Service: request, type: genSendingId, sendingId: " + sendingId +
+                ", sendingType: " + sendingDTO.getSendingRuleType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
+                ", total: " + sendingDTO.getTotalSending() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
+                ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
+                ", sender: " + sendingDTO.getSender() + ", userId: " + userId +
+                ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()
+        );
 
         // TX 입력
         sendMsgRequestDTO.getReceiverList().forEach(receiver -> {
@@ -68,6 +81,10 @@ public class MsgServiceImpl implements MsgService {
                 receiver.put("replace_sender", sendMsgRequestDTO.getReplaceSender());
                 insertSendingReplace(userId, sendingMsg.getId(), receiver);
             }
+
+            log.info("Service: request, type: input, sendingId: " + sendingId +
+                    ", TXId: "+ sendingMsg.getId() + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver());
+
         });
 
         // TX 입력 완료 시 send manager start sending
