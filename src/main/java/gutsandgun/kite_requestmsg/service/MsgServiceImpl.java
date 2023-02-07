@@ -59,7 +59,7 @@ public class MsgServiceImpl implements MsgService {
 
         log.info("Service: request, type: genSendingId, sendingId: " + sendingId +
                 ", sendingType: " + sendingDTO.getSendingRuleType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
-                ", total: " + sendingDTO.getTotalSending() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
+                ", total: " + sendingDTO.getTotalMessage() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
                 ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
                 ", sender: " + sendingDTO.getSender() + ", userId: " + userId +
                 ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()

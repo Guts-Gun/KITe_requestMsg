@@ -23,7 +23,7 @@ public class SendMsgRequestDTO {
         // sendingRuleType                     중계사 규칙 타입
         // sendingType                         발송 타입
         // replaceYn                           대체발송 여부
-        // totalSending                        총 발송 메세지 갯수
+        // totalMessage                        총 발송 메세지 갯수
         // inputTime                           등록 시간
         // scheduleTime                        예약 시간
         // title                               제목

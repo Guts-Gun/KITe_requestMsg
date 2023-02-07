@@ -26,7 +26,7 @@ public class SendingDTO {
 
     private String replaceYn;               // 대체발송 여부
 
-    private Long totalSending;              // 메세지 갯수
+    private Long totalMessage;              // 메세지 갯수
 
     private Long inputTime;                 // 등록 시간
 
