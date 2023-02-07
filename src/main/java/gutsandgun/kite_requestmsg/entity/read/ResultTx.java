@@ -1,5 +1,6 @@
 package gutsandgun.kite_requestmsg.entity.read;
 
+import gutsandgun.kite_requestmsg.entity.BaseTimeEntity;
 import gutsandgun.kite_requestmsg.type.FailReason;
 import gutsandgun.kite_requestmsg.type.SendingType;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import org.hibernate.annotations.Where;
 @Setter
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql = "UPDATE result_tx SET is_deleted=true WHERE id = ?")
-public class ResultTx {
+public class ResultTx extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +51,6 @@ public class ResultTx {
 	@Column(name = "fk_broker_id")
 	@Comment("중계사 id")
 	private Long brokerId;
-
-
-	/**
-	 * 이거 머임 알려주셈
-	 */
-	@Column(name = "fk_sending_x_id")
-	@Comment("")
-	private Long sendingXId;
 
 
 	/**
@@ -100,7 +93,7 @@ public class ResultTx {
 	 * 미디어 호스팅 주소
 	 */
 	@Comment("미디어 호스팅 주소")
-	private String media_link;
+	private String mediaLink;
 
 	/**
 	 * 메시지 내용
@@ -145,6 +138,6 @@ public class ResultTx {
 	@Comment("결과 기록 시간")
 	private Long logTime;
 
-    @ColumnDefault("false")
+	@ColumnDefault("false")
 	private Boolean isDeleted = false;
 }

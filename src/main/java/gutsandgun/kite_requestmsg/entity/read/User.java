@@ -1,5 +1,6 @@
 package gutsandgun.kite_requestmsg.entity.read;
 
+import gutsandgun.kite_requestmsg.entity.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import org.hibernate.annotations.Where;
 @Setter
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql= "UPDATE user SET is_deleted=true WHERE id = ?")
-public class User {
+public class User extends BaseTimeEntity {
 
     /**
      * String user id generate from keycloak
@@ -25,7 +26,7 @@ public class User {
     /**
      * user 이름
      */
-    @Comment("")
+    @Comment("유저 이름")
     private String name;
 
     /**

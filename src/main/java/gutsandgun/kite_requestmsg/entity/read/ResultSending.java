@@ -1,5 +1,6 @@
 package gutsandgun.kite_requestmsg.entity.read;
 
+import gutsandgun.kite_requestmsg.entity.BaseTimeEntity;
 import gutsandgun.kite_requestmsg.type.SendingRuleType;
 import gutsandgun.kite_requestmsg.type.SendingStatus;
 import gutsandgun.kite_requestmsg.type.SendingType;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.Where;
 @Setter
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql = "UPDATE result_sending SET is_deleted=true WHERE id = ?")
-public class ResultSending {
+public class ResultSending extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,10 +78,10 @@ public class ResultSending {
 	private Long failedMessage;
 
 	/**
-	 * 평균 속도
+	 * 평균 응답속도
 	 */
-	@Comment("평군 속도")
-	private Float avgSpeed;
+	@Comment("평군 응답속도")
+	private Float avgLatency;
 
 
 	// 시간 관련 로그
