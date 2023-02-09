@@ -73,6 +73,9 @@ public class MsgServiceImpl implements MsgService {
             sendingMsgDTO.setReceiver(receiver.get("receiver"));
             sendingMsgDTO.setName(receiver.get("name"));
             sendingMsgDTO.setRegId(userId);
+            sendingMsgDTO.setVar1(null);
+            sendingMsgDTO.setVar2(null);
+            sendingMsgDTO.setVar3(null);
 
             SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
 

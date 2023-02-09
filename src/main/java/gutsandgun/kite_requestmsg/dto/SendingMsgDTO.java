@@ -17,4 +17,7 @@ public class SendingMsgDTO {
     private String name;
     private String regId;
     private String modId;
+    private String var1;
+    private String var2;
+    private String var3;
 }
