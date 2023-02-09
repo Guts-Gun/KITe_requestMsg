@@ -12,5 +12,17 @@ public enum FailReason {
 	/**
 	 * 사용자 문제 ex)
 	 */
-	USER
+	USER,
+
+	//Service : sendMsg (broker랑 통신하는 곳)
+
+	/**
+	 * broker error : broker 이상
+	 */
+	BAD_REQUEST,
+	/**
+	 * broker error : 전화번호 없음
+	 */
+	INVALID_PHONE,
+
 }

@@ -9,6 +9,10 @@ public enum SendingType {
 	 */
 	SMS,
 	/**
+	 * MMS
+	 */
+	MMS,
+	/**
 	 * 카카오톡
 	 */
 	KAKAO,
