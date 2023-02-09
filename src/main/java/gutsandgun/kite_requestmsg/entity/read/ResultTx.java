@@ -120,17 +120,6 @@ public class ResultTx extends BaseTimeEntity {
 	@Comment("큐 삽입 시간")
 	private Long startTime;
 
-	/**
-	 * 중계사 전송 시간 unix time
-	 */
-	@Comment("중계사 전송 시간 시간")
-	private Long sendTime;
-
-	/**
-	 * 중계사 응답 완료 시간 unix time
-	 */
-	@Comment("중계사 응답 완료 시간")
-	private Long completeTime;
 
 	/**
 	 * 결과 기록 시간
