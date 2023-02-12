@@ -5,10 +5,13 @@ import gutsandgun.kite_requestmsg.dto.SendReplaceDTO;
 import gutsandgun.kite_requestmsg.dto.SendingDTO;
 import gutsandgun.kite_requestmsg.dto.SendingMsgDTO;
 import gutsandgun.kite_requestmsg.entity.write.SendReplace;
+import gutsandgun.kite_requestmsg.entity.write.SendingEmail;
 import gutsandgun.kite_requestmsg.entity.write.SendingMsg;
 import gutsandgun.kite_requestmsg.openfeign.SendingManagerServiceClient;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendReplaceRepository;
+import gutsandgun.kite_requestmsg.repository.write.WriteSendingEmailRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingMsgRepository;
+import gutsandgun.kite_requestmsg.type.SendingType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +36,10 @@ public class MsgServiceImpl implements MsgService {
 
     @Autowired
     private final WriteSendingMsgRepository writeSendingMsgRepository;
+
+
+    @Autowired
+    private final WriteSendingEmailRepository writeSendingEmailRepository;
 
     @Autowired
     private final WriteSendReplaceRepository writeSendReplaceRepository;
@@ -77,17 +84,25 @@ public class MsgServiceImpl implements MsgService {
             sendingMsgDTO.setVar2(null);
             sendingMsgDTO.setVar3(null);
 
-            SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
+            Long id = null;
+            if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)){
+                SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
+                id = sendingMsg.getId();
+                log.info("Service: request, type: input, sendingId: " + sendingId +
+                        ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver());
+
+            }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
+                SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
+                id = sendingEmail.getId();
+                log.info("Service: request, type: input, sendingId: " + sendingId +
+                        ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver());
+            }
 
             // 대체발송
             if(sendMsgRequestDTO.getSendingDTO().getReplaceYn().equals("Y")){
                 receiver.put("replace_sender", sendMsgRequestDTO.getReplaceSender());
-                insertSendingReplace(userId, sendingMsg.getId(), receiver);
+                insertSendingReplace(userId, id, receiver);
             }
-
-            log.info("Service: request, type: input, sendingId: " + sendingId +
-                    ", TXId: "+ sendingMsg.getId() + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver());
-
         });
 
         // TX 입력 완료 시 send manager start sending

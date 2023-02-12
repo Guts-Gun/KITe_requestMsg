@@ -40,13 +40,8 @@ public class RequestController {
         String userId = token.getTokenAttributes().get("preferred_username").toString();
 
         SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
-        String sendingType = sendingDTO.getSendingType().toString();
 
-        if(sendingType.equals("SMS")){
-            msgService.insertSendingMsg(userId, sendMsgRequestDTO);
-        } else if (sendingType.equals("EMAIL")){
-
-        }
+        msgService.insertSendingMsg(userId, sendMsgRequestDTO);
 
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
