@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 
-@FeignClient(name = "sending-manager-client", url="${feign.url.sending-manager}", configuration = FeignConfig.class)
+@FeignClient(name = "sending-manager-client", url="https://gutsandgun.kro.kr:30000", configuration = FeignConfig.class)
 public interface SendingManagerServiceClient {
 
     @PostMapping(value = "/sending/req")
