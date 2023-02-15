@@ -54,4 +54,4 @@ keycloak:
 
 feign:
   url :
-    sending-manager : localhost:8004
+    sending-manager : gutsandgun.kro.kr:30000
