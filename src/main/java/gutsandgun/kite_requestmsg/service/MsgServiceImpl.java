@@ -108,8 +108,10 @@ public class MsgServiceImpl implements MsgService {
         // TX 입력 완료 시 send manager start sending
         Map<String, Long> map = new HashMap<>();
         map.put("sendingId", sendingId);
-        sendingManagerServiceClient.startSending(map);
 
+        if(sendMsgRequestDTO.getReservationYn().equals("N")) {
+            sendingManagerServiceClient.startSending(map);
+        }
     }
 
     public Long insertSendingReplace(String userId, Long txId, Map<String, String> receiver){
