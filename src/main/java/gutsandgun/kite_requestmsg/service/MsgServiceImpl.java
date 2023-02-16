@@ -8,6 +8,7 @@ import gutsandgun.kite_requestmsg.entity.write.SendReplace;
 import gutsandgun.kite_requestmsg.entity.write.SendingEmail;
 import gutsandgun.kite_requestmsg.entity.write.SendingMsg;
 import gutsandgun.kite_requestmsg.openfeign.SendingManagerServiceClient;
+import gutsandgun.kite_requestmsg.repository.read.ReadSendingMsgRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendReplaceRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingEmailRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingMsgRepository;
@@ -37,7 +38,6 @@ public class MsgServiceImpl implements MsgService {
     @Autowired
     private final WriteSendingMsgRepository writeSendingMsgRepository;
 
-
     @Autowired
     private final WriteSendingEmailRepository writeSendingEmailRepository;
 
@@ -49,6 +49,9 @@ public class MsgServiceImpl implements MsgService {
 
     @Autowired
     private final ModelMapper mapper;
+
+    @Autowired
+    private final SendingCache sendingCache;
 
 
     @Override
@@ -84,19 +87,23 @@ public class MsgServiceImpl implements MsgService {
             sendingMsgDTO.setVar2(null);
             sendingMsgDTO.setVar3(null);
 
+
             Long id = null;
             if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)){
                 SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
                 id = sendingMsg.getId();
+                sendingCache.insertSendingMsg(id, sendingMsg);
                 log.info("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver());
 
             }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
                 SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
                 id = sendingEmail.getId();
+                sendingCache.insertSendingEmail(id, sendingEmail);
                 log.info("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver());
             }
+
 
             // 대체발송
             if(sendMsgRequestDTO.getSendingDTO().getReplaceYn().equals("Y")){

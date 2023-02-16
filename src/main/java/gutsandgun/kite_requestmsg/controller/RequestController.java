@@ -1,7 +1,7 @@
 package gutsandgun.kite_requestmsg.controller;
 
 import gutsandgun.kite_requestmsg.dto.SendMsgRequestDTO;
-import gutsandgun.kite_requestmsg.dto.SendingDTO;
+
 import gutsandgun.kite_requestmsg.service.MsgService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,6 @@ public class RequestController {
 
         JwtAuthenticationToken token = (JwtAuthenticationToken) principal;
         String userId = token.getTokenAttributes().get("preferred_username").toString();
-
-        SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
 
         msgService.insertSendingMsg(userId, sendMsgRequestDTO);
 

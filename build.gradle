@@ -33,8 +33,9 @@ dependencies {
     implementation group: 'org.apache.poi', name: 'poi', version: '5.2.2'
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2'
 
-//    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
 
