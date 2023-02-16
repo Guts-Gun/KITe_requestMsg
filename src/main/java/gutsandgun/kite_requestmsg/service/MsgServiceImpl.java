@@ -67,12 +67,12 @@ public class MsgServiceImpl implements MsgService {
 
         Long sendingId = response.getBody();
 
-        log.info("Service: request, type: genSendingId, sendingId: " + sendingId +
+        System.out.println("Service: request, type: genSendingId, sendingId: " + sendingId +
                 ", sendingType: " + sendingDTO.getSendingRuleType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
                 ", total: " + sendingDTO.getTotalMessage() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
                 ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
                 ", sender: " + sendMsgRequestDTO.getSender() + ", userId: " + userId +
-                ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()
+                ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()+"@"
         );
 
         // TX 입력
@@ -93,15 +93,15 @@ public class MsgServiceImpl implements MsgService {
                 SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
                 id = sendingMsg.getId();
                 sendingCache.insertSendingMsg(id, sendingMsg);
-                log.info("Service: request, type: input, sendingId: " + sendingId +
-                        ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver());
+                System.out.println("Service: request, type: input, sendingId: " + sendingId +
+                        ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver()+"@");
 
             }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
                 SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
                 id = sendingEmail.getId();
                 sendingCache.insertSendingEmail(id, sendingEmail);
-                log.info("Service: request, type: input, sendingId: " + sendingId +
-                        ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver());
+                System.out.println("Service: request, type: input, sendingId: " + sendingId +
+                        ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver()+"@");
             }
 
 
