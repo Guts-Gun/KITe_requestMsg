@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendmanager.config;
+package gutsandgun.kite_requestmsg.config;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
