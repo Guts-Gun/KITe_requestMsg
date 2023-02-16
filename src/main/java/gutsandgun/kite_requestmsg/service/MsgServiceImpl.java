@@ -25,10 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +72,10 @@ public class MsgServiceImpl implements MsgService {
                 ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()+"@"
         );
 
+        List<SendingMsg> sendingMsgList = new ArrayList<>();
+        List<SendingEmail> sendingEmailList = new ArrayList<>();
+
+
         // TX 입력
         sendMsgRequestDTO.getReceiverList().forEach(receiver -> {
             SendingMsgDTO sendingMsgDTO = new SendingMsgDTO();
@@ -87,23 +88,23 @@ public class MsgServiceImpl implements MsgService {
             sendingMsgDTO.setVar2(null);
             sendingMsgDTO.setVar3(null);
 
-
             Long id = null;
             if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)){
                 SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
                 id = sendingMsg.getId();
-                sendingCache.insertSendingMsg(id, sendingMsg);
+                sendingMsgList.add(sendingMsg);
+//                sendingCache.insertSendingMsg(id, sendingMsg);
                 System.out.println("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver()+"@");
 
             }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
                 SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
                 id = sendingEmail.getId();
-                sendingCache.insertSendingEmail(id, sendingEmail);
+                sendingEmailList.add(sendingEmail);
+//                sendingCache.insertSendingEmail(id, sendingEmail);
                 System.out.println("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver()+"@");
             }
-
 
             // 대체발송
             if(sendMsgRequestDTO.getSendingDTO().getReplaceYn().equals("Y")){
@@ -111,6 +112,12 @@ public class MsgServiceImpl implements MsgService {
                 insertSendingReplace(userId, id, receiver);
             }
         });
+
+        if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)) {
+            sendingCache.insertSendingMsgList(sendingId, sendingMsgList);
+        }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
+            sendingCache.insertSendingEmailList(sendingId, sendingEmailList);
+        }
 
         // TX 입력 완료 시 send manager start sending
         Map<String, Long> map = new HashMap<>();
