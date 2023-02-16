@@ -1,5 +1,6 @@
 package gutsandgun.kite_requestmsg.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gutsandgun.kite_requestmsg.dto.SendMsgRequestDTO;
 import gutsandgun.kite_requestmsg.dto.SendReplaceDTO;
 import gutsandgun.kite_requestmsg.dto.SendingDTO;
@@ -52,7 +53,7 @@ public class MsgServiceImpl implements MsgService {
 
 
     @Override
-    public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO){
+    public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO) throws JsonProcessingException {
 
         SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
         sendingDTO.setInputTime(new Date().getTime());
@@ -72,9 +73,7 @@ public class MsgServiceImpl implements MsgService {
                 ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()+"@"
         );
 
-        List<SendingMsg> sendingMsgList = new ArrayList<>();
-        List<SendingEmail> sendingEmailList = new ArrayList<>();
-
+        List<SendingMsgDTO> sendingMsgDTOList = new ArrayList<>();
 
         // TX 입력
         sendMsgRequestDTO.getReceiverList().forEach(receiver -> {
@@ -92,15 +91,14 @@ public class MsgServiceImpl implements MsgService {
             if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)){
                 SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
                 id = sendingMsg.getId();
-                sendingMsgList.add(sendingMsg);
+                sendingMsgDTOList.add(mapper.map(sendingMsg, SendingMsgDTO.class));
 //                sendingCache.insertSendingMsg(id, sendingMsg);
                 System.out.println("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver()+"@");
-
             }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
                 SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
                 id = sendingEmail.getId();
-                sendingEmailList.add(sendingEmail);
+                sendingMsgDTOList.add(mapper.map(sendingEmail, SendingMsgDTO.class));
 //                sendingCache.insertSendingEmail(id, sendingEmail);
                 System.out.println("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver()+"@");
@@ -113,11 +111,7 @@ public class MsgServiceImpl implements MsgService {
             }
         });
 
-        if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)) {
-            sendingCache.insertSendingMsgList(sendingId, sendingMsgList);
-        }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
-            sendingCache.insertSendingEmailList(sendingId, sendingEmailList);
-        }
+        sendingCache.insertSendingMsgList(sendingId, sendingMsgDTOList);
 
         // TX 입력 완료 시 send manager start sending
         Map<String, Long> map = new HashMap<>();

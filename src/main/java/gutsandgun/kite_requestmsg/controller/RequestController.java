@@ -1,5 +1,6 @@
 package gutsandgun.kite_requestmsg.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gutsandgun.kite_requestmsg.dto.SendMsgRequestDTO;
 
 import gutsandgun.kite_requestmsg.service.MsgService;
@@ -34,7 +35,7 @@ public class RequestController {
      */
 
     @PostMapping("/sendReq")
-    public ResponseEntity<String> requestMsg(Principal principal, @RequestBody SendMsgRequestDTO sendMsgRequestDTO) {
+    public ResponseEntity<String> requestMsg(Principal principal, @RequestBody SendMsgRequestDTO sendMsgRequestDTO) throws JsonProcessingException {
 
         JwtAuthenticationToken token = (JwtAuthenticationToken) principal;
         String userId = token.getTokenAttributes().get("preferred_username").toString();

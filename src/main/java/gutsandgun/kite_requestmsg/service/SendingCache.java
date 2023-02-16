@@ -1,33 +1,39 @@
 package gutsandgun.kite_requestmsg.service;
 
-import gutsandgun.kite_requestmsg.entity.write.SendingEmail;
-import gutsandgun.kite_requestmsg.entity.write.SendingMsg;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gutsandgun.kite_requestmsg.dto.SendingMsgDTO;
+import gutsandgun.kite_requestmsg.entity.read.SendingMsg;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class SendingCache {
 
-
-    @Cacheable(value = "sendingMsg", key = "#id", cacheManager = "CacheManager")
-    public SendingMsg insertSendingMsg(Long id, SendingMsg sendingMsg) {
-        return sendingMsg;
-    }
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Cacheable(value = "sendingMsg", key = "#sendingId", cacheManager = "CacheManager")
-    public List<SendingMsg> insertSendingMsgList(Long sendingId, List<SendingMsg> sendingMsgList) {
-        return sendingMsgList;
+    public List<String> insertSendingMsgList(Long sendingId,  List<SendingMsgDTO> sendingMsgDTOList) throws JsonProcessingException {
+        List<String> list = new ArrayList<>();
+        sendingMsgDTOList.forEach(sendingMsgDTO -> {
+            try {
+                String str = objectMapper.writeValueAsString(sendingMsgDTO);
+                list.add(str);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        log.info("==================================================");
+        log.info("Cacheable" + list );
+        log.info("==================================================");
+        return list;
     }
 
-    @Cacheable(value = "sendingEmail", key = "#id", cacheManager = "CacheManager")
-    public SendingEmail insertSendingEmail(Long id, SendingEmail sendingEmail) {
-        return sendingEmail;
-    }
-
-    @Cacheable(value = "sendingEmail", key = "#sendingId", cacheManager = "CacheManager")
-    public List<SendingEmail> insertSendingEmailList(Long sendingId, List<SendingEmail> SendingEmailList) {
-        return SendingEmailList;
-    }
 }
