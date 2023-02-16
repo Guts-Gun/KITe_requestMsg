@@ -10,11 +10,10 @@ spring:
   #    port: 6379
   #    host: 127.0.0.1
   #    password:
-  data:
-    redis:
-      cluster:
-        nodes:
-          - redis-cluster.redis.svc.cluster.local:6379
+  redis:
+    cluster:
+      nodes:
+        - redis-cluster.redis.svc.cluster.local:6379
   writedb:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: jdbc:mysql://gutsandgun.kro.kr:12005/request?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -68,4 +67,5 @@ keycloak:
 
 feign:
   url :
-    sending-manager : gutsandgun.kro.kr:30000
+#    sending-manager: localhost:8004
+    sending-manager : https://gutsandgun.kro.kr:30000

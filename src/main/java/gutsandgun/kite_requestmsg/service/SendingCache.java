@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 public class SendingCache {
 
 
-    @Cacheable(value="sendingMsg" , key = "#id" ,cacheManager = "redisCacheManager")
+    @Cacheable(value="sendingMsg" , key = "#id" ,cacheManager = "CacheManager")
     public SendingMsg insertSendingMsg(Long id, SendingMsg sendingMsg){
         return sendingMsg;
     }
 
-    @Cacheable(value="sendingEmail" , key = "#id" ,cacheManager = "redisCacheManager")
+    @Cacheable(value="sendingEmail" , key = "#id" ,cacheManager = "CacheManager")
     public SendingEmail insertSendingEmail(Long id, SendingEmail sendingEmail){
         return sendingEmail;
     }
