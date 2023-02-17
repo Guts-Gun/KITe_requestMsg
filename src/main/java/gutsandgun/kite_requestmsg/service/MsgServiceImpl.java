@@ -66,7 +66,7 @@ public class MsgServiceImpl implements MsgService {
         Long sendingId = response.getBody();
 
         System.out.println("Service: request, type: genSendingId, sendingId: " + sendingId +
-                ", sendingType: " + sendingDTO.getSendingRuleType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
+                ", sendingType: " + sendingDTO.getSendingType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
                 ", total: " + sendingDTO.getTotalMessage() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
                 ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
                 ", sender: " + sendMsgRequestDTO.getSender() + ", userId: " + userId +
