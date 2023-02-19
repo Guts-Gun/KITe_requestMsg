@@ -9,6 +9,7 @@ import gutsandgun.kite_requestmsg.entity.write.SendReplace;
 import gutsandgun.kite_requestmsg.entity.write.SendingEmail;
 import gutsandgun.kite_requestmsg.entity.write.SendingMsg;
 import gutsandgun.kite_requestmsg.openfeign.SendingManagerServiceClient;
+import gutsandgun.kite_requestmsg.publisher.RabbitMQProducer;
 import gutsandgun.kite_requestmsg.repository.read.ReadSendingMsgRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendReplaceRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingEmailRepository;
@@ -51,6 +52,8 @@ public class MsgServiceImpl implements MsgService {
     @Autowired
     private final SendingCache sendingCache;
 
+    private final RabbitMQProducer rabbitMQProducer;
+
 
     @Override
     public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO) throws JsonProcessingException {
@@ -65,7 +68,7 @@ public class MsgServiceImpl implements MsgService {
 
         Long sendingId = response.getBody();
 
-        System.out.println("Service: request, type: genSendingId, sendingId: " + sendingId +
+        rabbitMQProducer.logSendQueue("Service: request, type: genSendingId, sendingId: " + sendingId +
                 ", sendingType: " + sendingDTO.getSendingType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
                 ", total: " + sendingDTO.getTotalMessage() + ", replace: " + (sendingDTO.getReplaceYn()=="Y"? true : false) +
                 ", title: " + sendingDTO.getTitle() + ", content: " + sendingDTO.getContent() + ", mediaLink: " + sendingDTO.getMediaLink() +
@@ -93,14 +96,14 @@ public class MsgServiceImpl implements MsgService {
                 id = sendingMsg.getId();
                 sendingMsgDTOList.add(mapper.map(sendingMsg, SendingMsgDTO.class));
 //                sendingCache.insertSendingMsg(id, sendingMsg);
-                System.out.println("Service: request, type: input, sendingId: " + sendingId +
+                rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver()+"@");
             }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
                 SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
                 id = sendingEmail.getId();
                 sendingMsgDTOList.add(mapper.map(sendingEmail, SendingMsgDTO.class));
 //                sendingCache.insertSendingEmail(id, sendingEmail);
-                System.out.println("Service: request, type: input, sendingId: " + sendingId +
+                rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId +
                         ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver()+"@");
             }
 
