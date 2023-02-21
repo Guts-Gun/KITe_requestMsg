@@ -19,7 +19,6 @@ import org.hibernate.annotations.Where;
 public class SendReplace extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fk_tx_id")
     private Long id;
 
