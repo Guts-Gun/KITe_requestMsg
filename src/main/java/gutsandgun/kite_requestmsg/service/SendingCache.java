@@ -39,8 +39,12 @@ public class SendingCache {
     }
 
     @Cacheable(value = "sendReplaceId", key = "#Id", cacheManager = "CacheManager")
-    public SendReplaceDTO insertSendReplaceInfo(Long Id, SendReplaceDTO sendReplace){
-        return sendReplace;
+    public String insertSendReplaceInfo(Long Id, SendReplaceDTO sendReplace){
+        try {
+            return objectMapper.writeValueAsString(sendReplace);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
