@@ -35,25 +35,23 @@ public class RedisConfig {
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf).cacheDefaults(redisCacheConfiguration).build();
     }
 
-    @Value("${spring.data.redis.host}")
-    private String host;
+    //@Value("${spring.data.redis.host}")
+    //private String host;
 
-    @Value("${spring.data.redis.port}")
-    private int port;
+    //@Value("${spring.data.redis.port}")
+    //private int port;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        if(host==null){
-            String clusterNodes= "redis-cluster.redis.svc.cluster.local:6379";
-            RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(Collections.singleton(clusterNodes));
-            return new LettuceConnectionFactory(redisClusterConfiguration);
-        }
-        else{
-            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-            redisStandaloneConfiguration.setHostName(host);
-            redisStandaloneConfiguration.setPort(port);
-            return new LettuceConnectionFactory(redisStandaloneConfiguration);
-        }
+
+        String clusterNodes= "redis-cluster.redis.svc.cluster.local:6379";
+        RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(Collections.singleton(clusterNodes));
+        return new LettuceConnectionFactory(redisClusterConfiguration);
+
+        //RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        //redisStandaloneConfiguration.setHostName(host);
+        //redisStandaloneConfiguration.setPort(port);
+        //return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
