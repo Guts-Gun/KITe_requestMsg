@@ -127,9 +127,7 @@ public class MsgServiceImpl implements MsgService {
         }));
 
         log.info("Waiting threads... sendingId: "+sendingId+", total: "+sendMsgRequestDTO.getSendingDTO().getTotalMessage());
-        while(!Objects.equals(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))), sendMsgRequestDTO.getSendingDTO().getTotalMessage())){
-            log.info(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))));
-        }
+        while(!Objects.equals(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))), sendMsgRequestDTO.getSendingDTO().getTotalMessage())){}
         log.info("Threads are done. sendingId: "+sendingId+", total: "+setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))));
         Set<SendingMsgDTO> SendingMsgSet=setOperations.members("sendingMsgDTO".concat(String.valueOf(sendingId)));
         List<SendingMsgDTO> sendingMsgDTOList = new ArrayList<>(SendingMsgSet);
@@ -146,16 +144,17 @@ public class MsgServiceImpl implements MsgService {
 
     public Long insertSendingReplace(String userId, Long txId, Map<String, String> receiver){
 
-        SendReplace sendReplace = new SendReplace();
-        sendReplace.setId(txId);
-        sendReplace.setRegId(userId);
-        sendReplace.setReceiver(userId);
-        sendReplace.setReceiver(receiver.get("replace_receiver"));
-        sendReplace.setSender(receiver.get("replace_sender"));
+        SendReplaceDTO sendReplaceDTO = new SendReplaceDTO();
+        sendReplaceDTO.setId(txId);
+        sendReplaceDTO.setRegId(userId);
+        sendReplaceDTO.setReceiver(userId);
+        sendReplaceDTO.setReceiver(receiver.get("replace_receiver"));
+        sendReplaceDTO.setSender(receiver.get("replace_sender"));
 
-        sendingCache.insertSendReplaceInfo(txId,sendReplace);
+        sendingCache.insertSendReplaceInfo(txId,sendReplaceDTO);
 
-        writeSendReplaceRepository.save(sendReplace);
+        writeSendReplaceRepository.save(mapper.map(sendReplaceDTO, SendReplace.class));
+
 
         return txId;
     }

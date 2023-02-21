@@ -2,6 +2,7 @@ package gutsandgun.kite_requestmsg.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gutsandgun.kite_requestmsg.dto.SendReplaceDTO;
 import gutsandgun.kite_requestmsg.dto.SendingMsgDTO;
 import gutsandgun.kite_requestmsg.entity.write.SendReplace;
 import gutsandgun.kite_requestmsg.entity.read.SendingMsg;
@@ -38,7 +39,7 @@ public class SendingCache {
     }
 
     @Cacheable(value = "sendReplaceId", key = "#Id", cacheManager = "CacheManager")
-    public SendReplace insertSendReplaceInfo(Long Id, SendReplace sendReplace){
+    public SendReplaceDTO insertSendReplaceInfo(Long Id, SendReplaceDTO sendReplace){
         return sendReplace;
     }
 
