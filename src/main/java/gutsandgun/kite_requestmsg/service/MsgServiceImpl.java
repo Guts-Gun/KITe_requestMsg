@@ -176,14 +176,14 @@ public class MsgServiceImpl implements MsgService {
 
     public Long insertSendingReplace(String userId, Long txId, String replaceSender, String replaceReceiver){
 
-        SendReplaceDTO sendReplaceDTO = new SendReplaceDTO();
-        sendReplaceDTO.setId(txId);
-        sendReplaceDTO.setRegId(userId);
-        sendReplaceDTO.setReceiver(userId);
-        sendReplaceDTO.setReceiver(replaceReceiver);
-        sendReplaceDTO.setSender(replaceSender);
+        SendReplace sendReplace = new SendReplace();
+        sendReplace.setId(txId);
+        sendReplace.setRegId(userId);
+        sendReplace.setReceiver(userId);
+        sendReplace.setReceiver(replaceReceiver);
+        sendReplace.setSender(replaceSender);
 
-        writeSendReplaceRepository.save(mapper.map(sendReplaceDTO, SendReplace.class));
+        writeSendReplaceRepository.save(sendReplace);
 
         return txId;
     }
