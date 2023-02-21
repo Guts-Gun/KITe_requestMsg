@@ -3,6 +3,7 @@ package gutsandgun.kite_requestmsg.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gutsandgun.kite_requestmsg.dto.SendingMsgDTO;
+import gutsandgun.kite_requestmsg.entity.write.SendReplace;
 import gutsandgun.kite_requestmsg.entity.read.SendingMsg;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,6 +35,11 @@ public class SendingCache {
         log.info("Cacheable" + list );
         log.info("==================================================");
         return list;
+    }
+
+    @Cacheable(value = "sendReplaceId", key = "#Id", cacheManager = "CacheManager")
+    public SendReplace insertSendReplaceInfo(Long Id, SendReplace sendReplace){
+        return sendReplace;
     }
 
 }

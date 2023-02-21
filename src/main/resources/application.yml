@@ -33,7 +33,7 @@ spring:
     redis:
       cluster:
         nodes:
-          - redis-cluster.redis.svc.cluster.local:6379
+        - redis-cluster.redis.svc.cluster.local:6379
   writedb:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: jdbc:mysql://gutsandgun.kro.kr:12005/request?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8

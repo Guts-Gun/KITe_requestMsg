@@ -127,8 +127,8 @@ public class MsgServiceImpl implements MsgService {
         }));
 
         log.info("Waiting threads... sendingId: "+sendingId);
-        while(setOperations.members("sendingMsgDTO".concat(String.valueOf(sendingId))).size()!=sendMsgRequestDTO.getReceiverList().size()){}
-        log.info("Threads are done. sendingId: "+sendingId);
+        while(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId)))!=sendMsgRequestDTO.getSendingDTO().getTotalMessage()){}
+        log.info("Threads are done. sendingId: "+sendingId+", total: "+setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))));
         Set<SendingMsgDTO> SendingMsgSet=setOperations.members("sendingMsgDTO".concat(String.valueOf(sendingId)));
         List<SendingMsgDTO> sendingMsgDTOList = new ArrayList<>(SendingMsgSet);
 
@@ -151,11 +151,12 @@ public class MsgServiceImpl implements MsgService {
         sendReplace.setReceiver(receiver.get("replace_receiver"));
         sendReplace.setSender(receiver.get("replace_sender"));
 
+        sendingCache.insertSendReplaceInfo(txId,sendReplace);
+
         writeSendReplaceRepository.save(sendReplace);
 
         return txId;
     }
-
 
     @Override
     public void downloadSampleFile(HttpServletResponse response, List<String> headerList) {
