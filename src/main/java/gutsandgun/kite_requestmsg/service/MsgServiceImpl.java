@@ -127,7 +127,9 @@ public class MsgServiceImpl implements MsgService {
         }));
 
         log.info("Waiting threads... sendingId: "+sendingId);
-        while(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId)))!=sendMsgRequestDTO.getSendingDTO().getTotalMessage()){}
+        while(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId)))!=sendMsgRequestDTO.getSendingDTO().getTotalMessage()){
+            log.info(setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))));
+        }
         log.info("Threads are done. sendingId: "+sendingId+", total: "+setOperations.size("sendingMsgDTO".concat(String.valueOf(sendingId))));
         Set<SendingMsgDTO> SendingMsgSet=setOperations.members("sendingMsgDTO".concat(String.valueOf(sendingId)));
         List<SendingMsgDTO> sendingMsgDTOList = new ArrayList<>(SendingMsgSet);
