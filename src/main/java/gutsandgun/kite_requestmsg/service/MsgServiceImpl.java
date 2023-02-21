@@ -16,6 +16,7 @@ import gutsandgun.kite_requestmsg.repository.write.WriteSendingEmailRepository;
 import gutsandgun.kite_requestmsg.repository.write.WriteSendingMsgRepository;
 import gutsandgun.kite_requestmsg.type.SendingType;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -23,11 +24,14 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +60,7 @@ public class MsgServiceImpl implements MsgService {
 
 
     @Override
+    @Transactional
     public void insertSendingMsg(String userId, SendMsgRequestDTO sendMsgRequestDTO) throws JsonProcessingException {
 
         SendingDTO sendingDTO = sendMsgRequestDTO.getSendingDTO();
@@ -67,6 +72,7 @@ public class MsgServiceImpl implements MsgService {
         int statusCode = response.getStatusCode().value();
 
         Long sendingId = response.getBody();
+        SendingType sendingType = sendingDTO.getSendingType();
 
         rabbitMQProducer.logSendQueue("Service: request, type: genSendingId, sendingId: " + sendingId +
                 ", sendingType: " + sendingDTO.getSendingType() + ", ruleType: " + sendingDTO.getSendingRuleType() +
@@ -76,63 +82,106 @@ public class MsgServiceImpl implements MsgService {
                 ", inputTime: "+sendingDTO.getInputTime() + ", scheduleTime: " + sendingDTO.getScheduleTime()+"@"
         );
 
+        List<Map<String, String>> receiverList =  sendMsgRequestDTO.getReceiverList();
         List<SendingMsgDTO> sendingMsgDTOList = new ArrayList<>();
 
         // TX 입력
-        sendMsgRequestDTO.getReceiverList().forEach(receiver -> {
-            SendingMsgDTO sendingMsgDTO = new SendingMsgDTO();
-            sendingMsgDTO.setSendingId(sendingId);
-            sendingMsgDTO.setSender(sendMsgRequestDTO.getSender());
-            sendingMsgDTO.setReceiver(receiver.get("receiver"));
-            sendingMsgDTO.setName(receiver.get("name"));
-            sendingMsgDTO.setRegId(userId);
-            sendingMsgDTO.setVar1(null);
-            sendingMsgDTO.setVar2(null);
-            sendingMsgDTO.setVar3(null);
 
-            Long id = null;
-            if(sendingDTO.getSendingType().equals(SendingType.SMS) || sendingDTO.getSendingType().equals(SendingType.MMS)){
-                SendingMsg sendingMsg = writeSendingMsgRepository.save(mapper.map(sendingMsgDTO, SendingMsg.class));
-                id = sendingMsg.getId();
+        if(sendingType.equals(SendingType.SMS) || sendingType.equals(SendingType.MMS)) {
+
+            List<SendingMsg> sendingMsgList = new ArrayList<>();
+            receiverList.forEach(receiver -> {
+                SendingMsg sendingMsg = new SendingMsg();
+                sendingMsg.setSendingId(sendingId);
+                sendingMsg.setSender(sendMsgRequestDTO.getSender());
+                sendingMsg.setReceiver(receiver.get("receiver"));
+                sendingMsg.setName(receiver.get("name"));
+                sendingMsg.setRegId(userId);
+                sendingMsg.setVar1(null);
+                sendingMsg.setVar2(null);
+                sendingMsg.setVar3(null);
+                sendingMsgList.add(sendingMsg);
+            });
+            // tx 저장
+            List<SendingMsg> savedSendingMsgList = writeSendingMsgRepository.saveAll(sendingMsgList);
+            savedSendingMsgList.forEach(sendingMsg -> {
                 sendingMsgDTOList.add(mapper.map(sendingMsg, SendingMsgDTO.class));
-//                sendingCache.insertSendingMsg(id, sendingMsg);
-                rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId +
-                        ", TXId: "+ id + ", sender: " + sendingMsg.getSender() + ", receiver: " + sendingMsg.getReceiver()+"@");
-            }else if(sendingDTO.getSendingType().equals(SendingType.EMAIL)){
-                SendingEmail sendingEmail = writeSendingEmailRepository.save(mapper.map(sendingMsgDTO, SendingEmail.class));
-                id = sendingEmail.getId();
-                sendingMsgDTOList.add(mapper.map(sendingEmail, SendingMsgDTO.class));
-//                sendingCache.insertSendingEmail(id, sendingEmail);
-                rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId +
-                        ", TXId: "+ id + ", sender: " + sendingEmail.getSender() + ", receiver: " + sendingEmail.getReceiver()+"@");
-            }
+            });
 
-            // 대체발송
-            if(sendMsgRequestDTO.getSendingDTO().getReplaceYn().equals("Y")){
-                receiver.put("replace_sender", sendMsgRequestDTO.getReplaceSender());
-                insertSendingReplace(userId, id, receiver);
+        }else if(sendingType.equals(SendingType.EMAIL)){
+            // TX 입력
+            List<SendingEmail> sendingEmailList = new ArrayList<>();
+            receiverList.forEach(receiver -> {
+                SendingEmail sendingEmail = new SendingEmail();
+                sendingEmail.setSendingId(sendingId);
+                sendingEmail.setSender(sendMsgRequestDTO.getSender());
+                sendingEmail.setReceiver(receiver.get("receiver"));
+                sendingEmail.setRegId(userId);
+                sendingEmail.setVar1(null);
+                sendingEmail.setVar2(null);
+                sendingEmail.setVar3(null);
+                sendingEmailList.add(sendingEmail);
+            });
+
+            // tx 저장
+            List<SendingEmail> savedSendingMsgList = writeSendingEmailRepository.saveAll(sendingEmailList);
+            savedSendingMsgList.forEach(sendingEmail -> {
+                sendingMsgDTOList.add(mapper.map(sendingEmail, SendingMsgDTO.class));
+            });
+        }
+
+
+        // tx redis 저장
+        Thread thread1 = new Thread(() -> {
+            try {
+                sendingCache.insertSendingMsgList(sendingId, sendingMsgDTOList);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
         });
 
-        sendingCache.insertSendingMsgList(sendingId, sendingMsgDTOList);
+        // 로그
+        Thread thread2 = new Thread(() -> {
+            sendingMsgDTOList.forEach(sendingMsgDTO -> {
+                if(sendingType.equals(SendingType.SMS) || sendingType.equals(SendingType.MMS)){
+                    rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId + ", TXId: "+ sendingMsgDTO.getId() + ", sender: " + sendingMsgDTO.getSender() + ", receiver: " + sendingMsgDTO.getReceiver()+"@");
+                }else if(sendingType.equals(SendingType.EMAIL)){
+                    rabbitMQProducer.logSendQueue("Service: request, type: input, sendingId: " + sendingId +", TXId: "+ sendingMsgDTO.getId() + ", sender: " + sendingMsgDTO.getSender() + ", receiver: " + sendingMsgDTO.getReceiver()+"@");
+                }
+            });
+        });
 
-        // TX 입력 완료 시 send manager start sending
-        Map<String, Long> map = new HashMap<>();
-        map.put("sendingId", sendingId);
+        // 대체발송 정보 저장
+        Thread thread3 = new Thread(() -> {
+            if(sendingDTO.getReplaceYn().equals("Y")){
+                sendingMsgDTOList.forEach(sendingMsgDTO -> {
+                    List<Map<String,String>> filter = receiverList.stream().filter(receiver -> (receiver.get("receiver") == sendingMsgDTO.getReceiver())).collect(Collectors.toList());
+                    insertSendingReplace(userId, sendingMsgDTO.getId(), sendingMsgDTO.getSender(),  filter.get(0).get("replace_receiver"));
+                });
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
 
         if(sendMsgRequestDTO.getReservationYn().equals("N")) {
+            // TX 입력 완료 시 send manager start sending
+            Map<String, Long> map = new HashMap<>();
+            map.put("sendingId", sendingId);
             sendingManagerServiceClient.startSending(map);
         }
     }
 
-    public Long insertSendingReplace(String userId, Long txId, Map<String, String> receiver){
+    public Long insertSendingReplace(String userId, Long txId, String replaceSender, String replaceReceiver){
 
         SendReplaceDTO sendReplaceDTO = new SendReplaceDTO();
         sendReplaceDTO.setId(txId);
         sendReplaceDTO.setRegId(userId);
         sendReplaceDTO.setReceiver(userId);
-        sendReplaceDTO.setReceiver(receiver.get("replace_receiver"));
-        sendReplaceDTO.setSender(receiver.get("replace_sender"));
+        sendReplaceDTO.setReceiver(replaceReceiver);
+        sendReplaceDTO.setSender(replaceSender);
 
         writeSendReplaceRepository.save(mapper.map(sendReplaceDTO, SendReplace.class));
 
