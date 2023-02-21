@@ -155,8 +155,8 @@ public class MsgServiceImpl implements MsgService {
         Thread thread3 = new Thread(() -> {
             if(sendingDTO.getReplaceYn().equals("Y")){
                 sendingMsgDTOList.forEach(sendingMsgDTO -> {
-                    List<Map<String,String>> filter = receiverList.stream().filter(receiver -> (receiver.get("receiver") == sendingMsgDTO.getReceiver())).collect(Collectors.toList());
-                    insertSendingReplace(userId, sendingMsgDTO.getId(), sendingMsgDTO.getSender(),  filter.get(0).get("replace_receiver"));
+                    List<Map<String,String>> replaceReceiver = receiverList.stream().filter(receiver -> (receiver.get("receiver") == sendingMsgDTO.getReceiver())).collect(Collectors.toList());
+                    insertSendingReplace(userId, sendingMsgDTO.getId(), sendMsgRequestDTO.getReplaceSender(),  replaceReceiver.get(0).get("replace_receiver"));
                 });
             }
         });
